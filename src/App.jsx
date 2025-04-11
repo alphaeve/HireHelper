@@ -17,7 +17,7 @@ function App() {
     setReply("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/ai/interview", {
+      const res = await axios.post("https://hirehelper-backend.onrender.com/api/ai/interview", {
         message,
       });
 
