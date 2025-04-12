@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import MockInterview from "./components/MockInterview";
 import Dashboard from "./components/Dashboard";
+import { useState, useEffect } from "react";
+
 
 function App() {
   const [message, setMessage] = useState("");
@@ -9,6 +11,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
 
+  
+  useEffect(() => {
+    fetch('https://hirehelper-backend.onrender.com/track');
+  }, []);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
