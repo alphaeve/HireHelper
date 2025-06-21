@@ -61,7 +61,7 @@ function MockInterview() {
       console.error("Error asking question:", err);
     }
   };
-  
+
   const evaluateAnswer = async () => {
     try {
       const res = await axios.post("https://hirehelper-backend.onrender.com/api/interview/evaluate-answer", {
@@ -89,22 +89,30 @@ function MockInterview() {
       {step === "select" && (
         <div className="space-y-4">
           <h2 className="text-3xl font-extrabold text-gray-800">Select Role</h2>
+          <div className="space-y-4">
+  {/* Blinking error message */}
+  <div className="text-red-600 font-semibold animate-pulse bg-red-50 border border-red-300 p-3 rounded-lg">
+    ⚠️ Temporary Issue: Backend services are currently down. Some features may not work. This will be fixed shortly!
+  </div>
 
-          <div className="flex gap-2 flex-wrap">
-            {["Frontend Developer", "Backend Developer", "Data Scientist", "DevOps Engineer"].map((r) => (
-              <button
-                key={r}
-                onClick={() => setRole(r)}
-                className={`px-4 py-2 rounded-full border font-medium transition-all duration-200 ${
-                  role === r
-                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                    : "bg-gray-100 text-gray-800 hover:bg-blue-100"
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
+  <h2 className="text-3xl font-extrabold text-gray-800">Select Role</h2>
+  <div className="flex gap-2 flex-wrap">
+    {["Frontend Developer", "Backend Developer", "Data Scientist", "DevOps Engineer"].map((r) => (
+      <button
+        key={r}
+        onClick={() => setRole(r)}
+        className={`px-4 py-2 rounded-full border font-medium transition-all duration-200 ${
+          role === r
+            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+            : "bg-gray-100 text-gray-800 hover:bg-blue-100"
+        }`}
+      >
+        {r}
+      </button>
+    ))}
+  </div>
+</div>
+
 
           <p className="text-sm text-gray-500">Or type your own role:</p>
           <input
@@ -151,16 +159,11 @@ function MockInterview() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-800">🧠 Question:</h2>
-            <button
-              onClick={exitInterview}
-              className="text-sm text-red-500 hover:underline"
-            >
+            <button onClick={exitInterview} className="text-sm text-red-500 hover:underline">
               Exit Interview
             </button>
           </div>
-
           <p className="bg-gray-100 p-4 rounded-lg text-gray-800">{question}</p>
-
           <textarea
             className="w-full border p-3 rounded-lg bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="4"
@@ -168,7 +171,6 @@ function MockInterview() {
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type your answer or use the mic below..."
           />
-
           <button
             onClick={toggleListening}
             className={`w-full px-4 py-2 rounded-xl font-semibold transition-all ${
@@ -179,7 +181,6 @@ function MockInterview() {
           >
             🎙 {isListening ? "Listening... Click to Stop" : "Start Voice Answer"}
           </button>
-
           <button
             className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-all shadow-lg"
             onClick={evaluateAnswer}
@@ -193,36 +194,30 @@ function MockInterview() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-800">💡 Feedback:</h2>
-            <button
-              onClick={exitInterview}
-              className="text-sm text-red-500 hover:underline"
-            >
+            <button onClick={exitInterview} className="text-sm text-red-500 hover:underline">
               Exit Interview
             </button>
           </div>
-
-          {feedback && feedback.scores ? (
-  <div className="bg-yellow-100 p-4 rounded-lg text-gray-900 space-y-2">
-    <p className="font-semibold">💡 Improvement Tip:</p>
-    <p>{feedback.improvement}</p>
-
-    <div className="mt-4 space-y-1">
-      <p>🎯 <strong>Scores (out of 10):</strong></p>
-      <ul className="pl-4 list-disc">
-        <li>🧍‍♂️ Behavior: {feedback.scores.behavior}/10</li>
-        <li>📝 Grammar: {feedback.scores.grammar}/10</li>
-        <li>🛠 Technical: {feedback.scores.technical}/10</li>
-        <li>🎨 Creativity: {feedback.scores.creativity}/10</li>
-        <li>💡 Originality: {feedback.scores.originality}/10</li>
-      </ul>
-    </div>
-  </div>
-) : (
-  <p className="bg-yellow-100 p-4 rounded whitespace-pre-wrap text-gray-900">
-    {typeof feedback === "string" ? feedback : "Feedback not available."}
-  </p>
-)}
-
+          {typeof feedback === "object" && feedback !== null && feedback.scores ? (
+            <div className="bg-yellow-100 p-4 rounded-lg text-gray-900 space-y-2">
+              <p className="font-semibold">💡 Improvement Tip:</p>
+              <p>{feedback.improvement}</p>
+              <div className="mt-4 space-y-1">
+                <p>🎯 <strong>Scores (out of 10):</strong></p>
+                <ul className="pl-4 list-disc">
+                  <li>🧍‍♂️ Behavior: {feedback.scores.behavior}/10</li>
+                  <li>📝 Grammar: {feedback.scores.grammar}/10</li>
+                  <li>🛠 Technical: {feedback.scores.technical}/10</li>
+                  <li>🎨 Creativity: {feedback.scores.creativity}/10</li>
+                  <li>💡 Originality: {feedback.scores.originality}/10</li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <p className="bg-yellow-100 p-4 rounded whitespace-pre-wrap text-gray-900">
+              {typeof feedback === "string" ? feedback : "Feedback not available."}
+            </p>
+          )}
           <button
             className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 active:scale-95 transition-all shadow-lg"
             onClick={askQuestion}
@@ -236,15 +231,3 @@ function MockInterview() {
 }
 
 export default MockInterview;
-
-
-
-
-
-
-
-
-
-
-
-
