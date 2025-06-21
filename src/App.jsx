@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import MockInterview from "./components/MockInterview";
 import Dashboard from "./components/Dashboard";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 
 function App() {
