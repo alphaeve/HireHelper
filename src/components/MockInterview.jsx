@@ -8,6 +8,8 @@ function MockInterview() {
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
   const [step, setStep] = useState("select");
+  const [loading, setLoading] = useState(false);
+
 
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
@@ -49,6 +51,7 @@ function MockInterview() {
 
   const askQuestion = async () => {
     try {
+      setLoading(true);
       const res = await axios.post("https://hirehelper-backend.onrender.com/api/interview/ask-question", {
         role,
         level,
@@ -59,6 +62,8 @@ function MockInterview() {
       setStep("question");
     } catch (err) {
       console.error("Error asking question:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,7 +77,7 @@ function MockInterview() {
       setStep("feedback");
     } catch (err) {
       console.error("Error evaluating answer:", err);
-    }
+      }
   };
 
   const exitInterview = () => {
@@ -92,8 +97,8 @@ function MockInterview() {
           <div className="space-y-4">
   {/* Blinking error message */}
   <div className="text-red-600 font-semibold animate-pulse bg-red-50 border border-red-300 p-3 rounded-lg">
-    ⚠️ Temporary Issue: Backend services are currently down. Some features may not work. This will be fixed shortly!
-  </div>
+  ⚠️ Heads up! Our server might take a few seconds to respond. Please wait patiently — we're loading things for you!
+</div>
 
   <h2 className="text-3xl font-extrabold text-gray-800">Select Role</h2>
   <div className="flex gap-2 flex-wrap">
@@ -142,16 +147,24 @@ function MockInterview() {
           </div>
 
           <button
-            onClick={askQuestion}
-            disabled={!role}
-            className={`mt-6 w-full px-6 py-3 text-lg font-bold rounded-xl transition-all duration-300 relative overflow-hidden group ${
-              role
-                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:scale-105 active:scale-95"
-                : "bg-gray-300 text-gray-600 cursor-not-allowed"
-            }`}
-          >
-            <span className="z-10 relative">🚀 Start Interview</span>
-          </button>
+  onClick={askQuestion}
+  disabled={!role || loading}
+  className={`mt-6 w-full px-6 py-3 text-lg font-bold rounded-xl transition-all duration-300 relative overflow-hidden group ${
+    role && !loading
+      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:scale-105 active:scale-95"
+      : "bg-gray-300 text-gray-600 cursor-not-allowed"
+  }`}
+>
+  {loading ? (
+    <div className="flex items-center justify-center space-x-2">
+      <div className="w-5 h-5 border-2 border-t-2 border-white rounded-full animate-spin"></div>
+      <span className="z-10 relative">Starting...</span>
+    </div>
+  ) : (
+    <span className="z-10 relative">🚀 Start Interview</span>
+  )}
+</button>
+
         </div>
       )}
 

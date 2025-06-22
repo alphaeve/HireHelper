@@ -1,21 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import MockInterview from "./components/MockInterview";
 import Dashboard from "./components/Dashboard";
-import { useEffect } from "react";
-
+import AptitudeTest from "./components/AptitudeTest";
 
 function App() {
   const [message, setMessage] = useState("");
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
+  const [view, setView] = useState("assistant"); // "assistant", "dashboard", "aptitude"
 
-  
   useEffect(() => {
-    fetch('https://hirehelper-backend.onrender.com/track');
+    fetch("https://hirehelper-backend.onrender.com/track");
   }, []);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -24,9 +22,10 @@ function App() {
     setReply("");
 
     try {
-      const res = await axios.post("https://hirehelper-backend.onrender.com/api/ai/interview", {
-        message,
-      });
+      const res = await axios.post(
+        "https://hirehelper-backend.onrender.com/api/ai/interview",
+        { message }
+      );
 
       setReply(res.data.reply);
 
@@ -41,8 +40,12 @@ function App() {
         },
       };
 
-      const prevResults = JSON.parse(localStorage.getItem("interviewResults")) || [];
-      localStorage.setItem("interviewResults", JSON.stringify([...prevResults, result]));
+      const prevResults =
+        JSON.parse(localStorage.getItem("interviewResults")) || [];
+      localStorage.setItem(
+        "interviewResults",
+        JSON.stringify([...prevResults, result])
+      );
     } catch (err) {
       console.error(err);
       setReply("Something went wrong.");
@@ -62,35 +65,47 @@ function App() {
         <div className="bubble bubble5"></div>
       </div>
 
-      {/* App UI */}
+      {/* Header */}
       <div className="flex justify-center mb-4">
-  <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-blue-500 to-purple-500 animate-shine">
-    HireHelper
-  </h1>
-</div>
+        <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-blue-500 to-purple-500 animate-shine">
+          HireHelper
+        </h1>
+      </div>
 
+      {/* Navigation Buttons */}
       <div className="relative z-10 p-4">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-6 gap-2">
           <button
-            onClick={() => setShowDashboard(false)}
-            className={`px-4 py-2 font-semibold rounded-l-xl shadow-md transition duration-300 ${
-              !showDashboard ? "bg-blue-600 text-white" : "bg-white border"
+            onClick={() => setView("assistant")}
+            className={`px-4 py-2 font-semibold rounded-xl shadow-md transition duration-300 ${
+              view === "assistant" ? "bg-blue-600 text-white" : "bg-white border"
             }`}
           >
             AI Assistant
           </button>
           <button
-            onClick={() => setShowDashboard(true)}
-            className={`px-4 py-2 font-semibold rounded-r-xl shadow-md transition duration-300 ${
-              showDashboard ? "bg-blue-600 text-white" : "bg-white border"
+            onClick={() => setView("dashboard")}
+            className={`px-4 py-2 font-semibold rounded-xl shadow-md transition duration-300 ${
+              view === "dashboard" ? "bg-blue-600 text-white" : "bg-white border"
             }`}
           >
             Dashboard
           </button>
+          <button
+            onClick={() => setView("aptitude")}
+            className={`px-4 py-2 font-semibold rounded-xl shadow-md transition duration-300 ${
+              view === "aptitude" ? "bg-blue-600 text-white" : "bg-white border"
+            }`}
+          >
+            Aptitude Test
+          </button>
         </div>
 
-        {showDashboard ? (
+        {/* Section Renderer */}
+        {view === "dashboard" ? (
           <Dashboard />
+        ) : view === "aptitude" ? (
+          <AptitudeTest />
         ) : (
           <div className="flex items-center justify-center">
             <MockInterview />
@@ -155,20 +170,19 @@ function App() {
         }
 
         @keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0) scale(1);
-  }
-  25% {
-    transform: translateY(-20px) translateX(30px) scale(1.05);
-  }
-  50% {
-    transform: translateY(-40px) translateX(60px) scale(1.1);
-  }
-  75% {
-    transform: translateY(-20px) translateX(30px) scale(1.05);
-  }
-}
-
+          0%, 100% {
+            transform: translateY(0) translateX(0) scale(1);
+          }
+          25% {
+            transform: translateY(-20px) translateX(30px) scale(1.05);
+          }
+          50% {
+            transform: translateY(-40px) translateX(60px) scale(1.1);
+          }
+          75% {
+            transform: translateY(-20px) translateX(30px) scale(1.05);
+          }
+        }
       `}</style>
     </div>
   );

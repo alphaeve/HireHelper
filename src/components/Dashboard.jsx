@@ -1,71 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, Legend, ResponsiveContainer } from "recharts";
 
 const Dashboard = () => {
-  const [results, setResults] = useState([]);
+  const [aptitudeResults, setAptitudeResults] = useState([]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("interviewResults")) || [];
-    setResults(stored);
+    const aptitudeData = JSON.parse(localStorage.getItem("aptitudeResults")) || [];
+    setAptitudeResults(aptitudeData);
   }, []);
 
-  // Line chart data (score over time)
-  const scoreData = results.map((res, index) => ({
-    name: `#${index + 1}`,
-    score: res.totalScore,
-  }));
-
-  // Pie chart data (category performance)
-  const totalCategories = results.reduce(
-    (acc, session) => {
-      Object.entries(session.categories || {}).forEach(([key, value]) => {
-        acc[key] = (acc[key] || 0) + value;
-      });
-      return acc;
-    },
-    {}
-  );
-
-  const pieData = Object.entries(totalCategories).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
-  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042"];
+  const handleClear = () => {
+    localStorage.removeItem("aptitudeResults");
+    setAptitudeResults([]);
+  };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">📊 Interview Dashboard</h1>
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-blue-700">🧠 Aptitude Test Dashboard</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Line Chart */}
-        <div className="bg-white shadow p-4 rounded-2xl">
-          <h2 className="text-lg font-semibold mb-2">Score Over Time</h2>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={scoreData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="score" stroke="#8884d8" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+      <div className="bg-white shadow p-4 rounded-2xl">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Results</h2>
+          {aptitudeResults.length > 0 && (
+            <button
+              onClick={handleClear}
+              className="px-4 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium"
+            >
+              Clear Data 🗑️
+            </button>
+          )}
         </div>
 
-        {/* Pie Chart */}
-        <div className="bg-white shadow p-4 rounded-2xl">
-          <h2 className="text-lg font-semibold mb-2">Category Breakdown</h2>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={80} label>
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        {aptitudeResults.length === 0 ? (
+          <p className="text-gray-600">No aptitude tests taken yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left border">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700">
+                  <th className="py-2 px-4 border">#</th>
+                  <th className="py-2 px-4 border">Date</th>
+                  <th className="py-2 px-4 border">Score</th>
+                  <th className="py-2 px-4 border">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {aptitudeResults.map((res, i) => (
+                  <tr key={i} className="border-t">
+                    <td className="py-2 px-4 border">{i + 1}</td>
+                    <td className="py-2 px-4 border">{res.date}</td>
+                    <td className="py-2 px-4 border font-semibold">{res.score}</td>
+                    <td className="py-2 px-4 border">{res.total}</td>
+                  </tr>
                 ))}
-              </Pie>
-              <Legend />
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
